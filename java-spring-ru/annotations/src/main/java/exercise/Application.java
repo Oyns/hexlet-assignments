@@ -12,7 +12,7 @@ public class Application {
         for (Method method : Address.class.getDeclaredMethods()) {
             if (method.isAnnotationPresent(Inspect.class)) {
                 var methodName = method.getName();
-                var methodReturnType = method.getReturnType();
+                var methodReturnType = method.getReturnType().getSimpleName();
 
                 try {
                     method.invoke(address);

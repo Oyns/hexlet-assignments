@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/products")
@@ -18,7 +19,14 @@ public class ProductsController {
     // BEGIN
     @GetMapping
     public List<Product> getPagedProductsSortedByPrice(@RequestParam(defaultValue = "0", name = "min") Integer startsFrom,
-                                                       @RequestParam(defaultValue = "1000000", name = "max") Integer endsWith) {
+                                                       @RequestParam(required = false, name = "max") Integer endsWith) {
+
+        if (Objects.isNull(endsWith)) {
+            endsWith = productRepository.findAll().stream()
+                    .map(Product::getPrice)
+                    .max(Integer::compareTo)
+                    .orElseThrow(() -> new ResourceNotFoundException("Не фортануло"));
+        }
 
         return productRepository.findAllByPriceBetweenOrderByPriceAsc(startsFrom, endsWith);
     }
